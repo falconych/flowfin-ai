@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: core-service
+
+  # Database Connection (PostgreSQL)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flowfin_db
+    username: flowfin_user
+    password: flowfin_password
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Event Streaming (Apache Kafka)
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: core-service-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+  # Vector Database (Qdrant & Spring AI)
+  ai:
+    vectorstore:
+      qdrant:
+        host: localhost
+        port: 6334 # gRPC port for Spring AI
+        collection-name: flowfin_documents
