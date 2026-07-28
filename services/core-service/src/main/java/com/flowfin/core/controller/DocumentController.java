@@ -1,3 +1,5 @@
+package com.flowfin.core.controller;
+
 import com.flowfin.core.dto.DocumentRequest;
 import com.flowfin.core.service.DocumentProducer;
 import jakarta.validation.Valid;
