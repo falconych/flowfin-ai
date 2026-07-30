@@ -33,6 +33,7 @@ spring:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
+        spring.json.add.type.headers: true
 
   # Vector Database (Qdrant & Spring AI)
   ai:
@@ -41,3 +42,9 @@ spring:
         host: localhost
         port: 6334 # gRPC port for Spring AI
         collection-name: flowfin_documents
+ 
+
+app:
+  kafka:
+    topics:
+      raw-documents: raw-documents-topic
