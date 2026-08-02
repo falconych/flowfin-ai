@@ -32,7 +32,7 @@ spring:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
-        spring.json.trusted.packages: "*"
+        spring.json.trusted.packages: "com.flowfin.core.event"
         spring.json.add.type.headers: true
 
   # Vector Database (Qdrant & Spring AI)
@@ -45,6 +45,11 @@ spring:
  
 
 app:
+  processing:
+    timeout-seconds: 10
+  chunking:
+    max-chunk-size: 500
+    overlap-size: 50
   kafka:
     topics:
       raw-documents: raw-documents-topic

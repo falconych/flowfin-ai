@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -52,6 +53,36 @@ public class DocumentService {
                 savedEntity.getTitle(),
                 savedEntity.getStatus().name(),
                 savedEntity.getCreatedAt()
+        );
+    }
+@Transactional
+    public void markAsProcessing(UUID documentId) {
+        updateStatus(documentId, DocumentStatus.PROCESSING);
+    }
+
+    @Transactional
+    public void markAsCompleted(UUID documentId) {
+        updateStatus(documentId, DocumentStatus.COMPLETED);
+    }
+
+    @Transactional
+    public void markAsFailed(UUID documentId) {
+        updateStatus(documentId, DocumentStatus.FAILED);
+    }
+
+    private void updateStatus(UUID documentId, DocumentStatus newStatus) {
+        if (documentId == null) {
+            log.warn("Cannot update status: documentId is null");
+            return;
+        }
+
+        documentRepository.findById(documentId).ifPresentOrElse(
+                entity -> {
+                    entity.setStatus(newStatus);
+                    documentRepository.save(entity);
+                    log.info("Document status updated to {} for documentId: {}", newStatus, documentId);
+                },
+                () -> log.error("Document not found in database for documentId: {}", documentId)
         );
     }
 }
