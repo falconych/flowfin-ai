@@ -50,6 +50,11 @@ app:
   chunking:
     max-chunk-size: 500
     overlap-size: 50
+  qdrant:
+    host: ${QDRANT_HOST:localhost}
+    port: ${QDRANT_PORT:6334}
+    collection-name: document_chunks
+    vector-size: 384 # Standard size for miniature embedding models (e.g. all-MiniLM-L6-v2)
   kafka:
     topics:
       raw-documents: raw-documents-topic

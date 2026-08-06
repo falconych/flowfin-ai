@@ -19,13 +19,13 @@ services:
 
   # 2. Qdrant (Vector Store for RAG)
   qdrant:
-    image: qdrant/qdrant:v1.9.2
+    image: qdrant/qdrant:latest
     container_name: flowfin-qdrant
     ports:
-      - "6333:6333" # REST API
+      - "6333:6333" # HTTP API & Web UI Dashboard
       - "6334:6334" # gRPC API
-    volumes:
-      - qdrant_data:/qdrant/storage
+      - qdrant_storage:/qdrant/storage
+    restart: unless-stopped
 
   # 3. Apache Kafka (KRaft mode - no Zookeeper required)
   kafka:
