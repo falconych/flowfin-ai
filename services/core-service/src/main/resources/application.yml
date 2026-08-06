@@ -12,9 +12,15 @@ spring:
     password: flowfin_password
     driver-class-name: org.postgresql.Driver
 
+  flyway:
+    enabled: true
+    baseline-on-migrate: true # Автоматически пометит существующую БД как baseline, если в ней уже созданы таблицы
+    baseline-version: 0
+    locations: classpath:db/migration
+
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
     properties:
       hibernate:
@@ -23,26 +29,26 @@ spring:
   # Event Streaming (Apache Kafka)
   kafka:
     bootstrap-servers: localhost:9092
+    
+    # Конфигурация отправки сообщений (Producer)
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: true
+
+    # Конфигурация вычитывания сообщений (Consumer)
     consumer:
       group-id: core-service-group
       auto-offset-reset: earliest
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        spring.json.trusted.packages: "com.flowfin.core.event"
-        spring.json.add.type.headers: true
-
-  # Vector Database (Qdrant & Spring AI)
-  ai:
-    vectorstore:
-      qdrant:
-        host: localhost
-        port: 6334 # gRPC port for Spring AI
-        collection-name: flowfin_documents
- 
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.value.default.type: "com.flowfin.core.event.DocumentIngestedEvent"
+        spring.json.use.type.headers: false
+        spring.json.trusted.packages: "com.flowfin.core.event,com.flowfin.core.dto"
 
 app:
   processing:

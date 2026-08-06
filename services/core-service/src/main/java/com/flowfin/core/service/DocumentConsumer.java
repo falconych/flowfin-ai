@@ -20,6 +20,7 @@ public class DocumentConsumer {
 
     private final DocumentService documentService;
     private final TextChunkerService textChunkerService;
+    private final QdrantService qdrantService;
 
     // Timeout duration in seconds (defaults to 10s if not specified in configuration)
     @Value("${app.processing.timeout-seconds:10}")
@@ -68,12 +69,13 @@ public class DocumentConsumer {
      * Core ingestion pipeline processing steps (Chunking -> Embedding -> Vector DB insertion).
      */
     private void processDocumentPipeline(DocumentIngestedEvent event) {
-        // Perform text chunking
+        // 1. Perform text chunking
         List<DocumentChunk> chunks = textChunkerService.chunkText(event.documentId(), event.content());
 
         chunks.forEach(chunk -> log.info("Generated Chunk [index={}]: '{}' (len={})",
                 chunk.chunkIndex(), chunk.content(), chunk.charCount()));
 
-        // TODO (Phase 3): Generate embeddings and persist vectors to Qdrant
+        // 2. Generate embeddings and persist vector points to Qdrant
+        qdrantService.upsertChunks(chunks);
     }
 }
